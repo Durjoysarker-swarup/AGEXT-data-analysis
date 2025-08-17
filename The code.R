@@ -61,6 +61,13 @@ corr_all <- cor(student_data, use="pairwise.complete.obs")
 ggcorrplot(corr_all, lab = TRUE, show.diag = FALSE)
 
 
+#adding more plot for the explination
+ggplot(student_data, aes(`Access to Info Sources`,`Annual Income`)) +
+  geom_point() +
+  geom_smooth(method="lm", se=TRUE) +
+  labs(x="Access to information", y="Annual income", title="Info Access vs Income")
+
+
 #age categories adding in the student data
 student_data <- student_data %>% 
   mutate(age_cat = ntile(`Age`, 3)) %>% 
@@ -79,6 +86,38 @@ student_data <- student_data %>%
   ))
 student_data %>% count(age_cat)
 student_data %>% count(income_cat)
+
+
+#table for just analysis
+New_table <-  student_data %>% group_by(income_cat) %>%
+  summarise(
+    mean_age = mean(`Age`, na.rm=TRUE),
+    mean_education = mean(`Education`, na.rm=TRUE),
+    mean_experience = mean(experience, na.rm=TRUE),
+    mean_access = mean(`Access to Info Sources`, na.rm=TRUE),
+    mean_knowledge = mean(`Knowledge`, na.rm=TRUE),
+    mean_family = mean(`Family Size`, na.rm=TRUE)
+  )
+
+
+
+#histogram plot
+ggplot(student_data, aes(`Annual Income`)) +
+  geom_histogram(binwidth = 20, boundary = 0, color = "black", fill = "grey80") +
+  labs(title = "Histogram of Annual Income",
+       x = "Annual income",
+       y = "Count") +
+  theme_minimal()
+
+
+
+#Regression model building
+model <- lm(`Annual Income` ~ `Education` + `Access to Info Sources`+ `Knowledge` + `Age` + `Family Size` + `Farm Size` + `experience`, data = student_data)
+summary(model)
+
+# check multicollinearity
+car::vif(model)
+#this VIF is good but the model is-not good because of the RMSE and the r-squred and the adjusted r-squred. the model is very bad
 
 
 
