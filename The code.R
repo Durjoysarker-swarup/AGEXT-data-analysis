@@ -39,7 +39,6 @@ student_data %>% summarise(
 
 
 #calculating the pearson correlation and p value
-install.packages("Hmisc")
 library(Hmisc)
 res <- rcorr(as.matrix(student_data), type="pearson")
 r_mat <- res$r
